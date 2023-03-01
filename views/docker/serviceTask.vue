@@ -108,7 +108,7 @@ export default {
     },
   methods:{
     clickRow: function(row,expandRows){
-      console.log(row)
+      let el = expandRows.length
       this.task_log = ''
       var that = this
       if (expandRows.length>1) {
@@ -123,7 +123,9 @@ export default {
       if  (expandRows.length==0){
         return 
       }
-      this.getTaskLog(row)
+      if (el==1){
+        this.getTaskLog(expandRows[0])
+      }
     },
     getTaskLog: function(row){
       taskLog({host:this.$props.client.host,task_id:row.taskId}).then(response => {
