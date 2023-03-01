@@ -26,20 +26,27 @@
             :header-cell-style="{'font-size':'12px','padding-bottom':'6px','padding-top':'6px','background-color':'rgb(249,249,249)'}"
             style="width: 100%;"
             >
-            <el-table-column prop="Name" label="任务名" width="200" sortable>
+            <el-table-column prop="Name" label="集群名称" width="200" sortable>
                 <template slot-scope="scope">
-                    <a style="font-size:14px;color:rgb(65,125,205);" @click="editClient(scope.row,false)">{{ scope.row.name}}</a>
-                    <p style="font-size:8px;margin:0px;">{{ scope.row.host}}</p>
+                    <div  class="cell_click" @click="editClient(scope.row,false)">
+                        <p style="font-size:14px;color:rgb(65,125,205);margin:0px;">{{ scope.row.name}}</p>
+                        <p style="font-size:8px;margin:0px;margin:0px;">{{ scope.row.host}}</p>
+                    </div>
                 </template>
+
             </el-table-column>
             <el-table-column label="Node" width="200" sortable>
                 <template slot-scope="scope">
-                    <a style="color:rgb(65,125,205);" @click="getClientNode(scope.row.name,scope.row.host)">{{ scope.row.node_alive_count}}/{{ scope.row.node_total_count}}</a>
+                    <div  class="cell_click" @click="getClientNode(scope.row.name,scope.row.host)">
+                        <p style="color:rgb(65,125,205);">{{ scope.row.node_alive_count}}/{{ scope.row.node_total_count}}</p>
+                    </div>
                 </template>
             </el-table-column>
             <el-table-column  label="Service" sortable>
                 <template slot-scope="scope">
-                    <a style="color:rgb(65,125,205);" @click="getClientService(scope.row.name,scope.row.host)">{{ scope.row.service_count}}</a>
+                    <div  class="cell_click" @click="getClientService(scope.row.name,scope.row.host)">
+                    <a style="color:rgb(65,125,205);">{{ scope.row.service_count}}</a>
+                    </div>
                 </template>
             </el-table-column>
             <el-table-column  label="Container" sortable>
@@ -49,23 +56,8 @@
             </el-table-column>
             <el-table-column prop="ErrorLog" label="操作" width="160">
                 <template slot-scope="scope">
-                    <el-popconfirm
-                        @confirm="operateTask(scope.row.Name,'stop')"
-                        title="确定停止？"
-                        >
-                    <el-button 
-                        slot="reference" 
-                        size="mini" 
-                        v-if="scope.row.State == 'Active'"
-                        style="margin-right: 5px;">停止</el-button>
-                    </el-popconfirm>
-                    <el-popconfirm
-                        title="是否启动？"
-                        @confirm="operateTask(scope.row.Name,'active')"
-                        >
-                    <el-button slot="reference" size="mini" v-if="scope.row.State != 'Active'"
-                        style="margin-right: 5px;">启动</el-button>
-                    </el-popconfirm>
+                    <el-button slot="reference" size="mini" @click="editClient(scope.row,false)"
+                        style="margin-right: 5px;">修改</el-button>
                     <el-popconfirm
                         @confirm="operateTask(scope.row.Name,'delete')"
                         title="确认删除？"
@@ -110,12 +102,12 @@
             <docker-node :client="selectClient"></docker-node>
         </el-drawer>
         <!-- <el-drawer
-            title="container"
-            :visible.sync="container_drawler"
+            title="inspect"
+            :visible.sync="inspect_drawler"
             :with-header="false"
             :destroy-on-close="true"
             size="80%">
-            <docker-service :client="selectClient"></docker-service>
+            <json-view :value="inspect_data"></json-view>
         </el-drawer> -->
     </div>
     
@@ -131,22 +123,29 @@
     components: {
         dockerService,
         dockerNode,
-        editClient
+        editClient,
     },
     data: function () {return {
         docker_clients:[],
+        inspect_drawler:false,
         service_drawler:false,
         node_drawler:false,
         container_drawler:false,
         client_drawer:false,
         selectClient: {},
-        searchText:""
+        searchText:"",
+        inspect_data: {}
   }},
     mounted() {
         this.getCientInfo()
         }
     ,
     methods: {
+        clientInspect(client){
+            console.log(client)
+            this.inspect_data = client.inspect
+            this.inspect_drawler = true
+        },
         getClientNode: function(name,host){
             this.selectClient['host'] = host
             this.selectClient['name'] = name

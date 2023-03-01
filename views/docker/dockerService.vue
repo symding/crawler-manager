@@ -42,7 +42,10 @@
           prop="name"
           width="400">
           <template slot-scope="scope">
-            <a style="color:rgb(65,125,205);" @click="editService(scope.row)">{{ scope.row.name}}</a>
+            <div  class="cell_click" @click="editService(scope.row)">
+              <p style="color:rgb(65,125,205);margin:0px;">{{ scope.row.name}}</p>
+            </div>
+            
             </template>
         </el-table-column>
         <el-table-column
@@ -50,7 +53,9 @@
           prop="replicas"
           sortable>
           <template slot-scope="scope">
-            <a style="color:rgb(65,125,205);;" @click="showServiceTasks(scope.row)">{{ scope.row.replicas}}</a>
+            <div  class="cell_click" @click="showServiceTasks(scope.row)">
+              <p style="color:rgb(65,125,205);margin:0px;">{{ scope.row.replicas}}</p>
+            </div>
           </template>
         </el-table-column>
         <el-table-column

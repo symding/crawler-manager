@@ -115,6 +115,8 @@ pre {
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .2);
   background-color: rgb(52, 137, 255);
 }
-
-
+.cell_click:hover {
+  background-color: rgb(210, 221, 235);
+  border-radius: 4px;
+}
 </style>

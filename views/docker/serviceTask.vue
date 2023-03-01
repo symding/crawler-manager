@@ -42,7 +42,7 @@
           日志行数：
           <el-input placeholder="请输入内容" v-model="lineCount" size="mini" style="width:100px;">
           </el-input>
-        <el-button size="mini" style="float:right;margin-bottom: 5px;">刷新日志</el-button>
+        <el-button size="mini" style="float:right;margin-bottom: 5px;" @click="getTaskLog(props.row)">刷新日志</el-button>
         </div>
         <div style="height:300px;overflow:scroll;width:100%;border: 1px solid grey;border-radius: 4px;padding: 10px;">
           <pre style="margin:0px;font-size: 10px;">{{task_log}}</pre>
@@ -128,7 +128,7 @@ export default {
       }
     },
     getTaskLog: function(row){
-      taskLog({host:this.$props.client.host,task_id:row.taskId}).then(response => {
+      taskLog({host:this.$props.client.host,task_id:row.taskId,line_count:this.lineCount}).then(response => {
         this.task_log = response.data
       })
     },
