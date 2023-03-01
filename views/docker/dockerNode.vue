@@ -57,9 +57,11 @@
     prop="addr"
     width=150>
     <template slot-scope="scope">
-        <p style="display: inline;">{{ scope.row.addr }}&nbsp;</p>
-        <p style="display: inline;" v-if="scope.row.state=='ready'">&nbsp;{{ scope.row.state}}&nbsp;</p>
-        <p style="display: inline;" v-if="scope.row.state!='ready'">&nbsp;{{ scope.row.state}}&nbsp;</p>
+      <el-tooltip style="font-size: 8px;" effect="light" :content="scope.row.state" placement="left-end">
+        <div class="green_dot"  v-if="scope.row.state=='ready'"></div>
+        <div class="red_dot" v-if="scope.row.state!='ready'"></div>
+      </el-tooltip>
+        {{ scope.row.addr }}
       </template>
   </el-table-column>
   <el-table-column

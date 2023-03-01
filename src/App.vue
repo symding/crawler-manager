@@ -57,4 +57,64 @@ pre {
   font-family: Menlo, Monaco, "Courier New", monospace;
 }
 
+.green_dot {
+  position: absolute;
+  top: 50%;
+  margin-left: -5px;
+  margin-top: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 100%;
+  left:5px;
+  display: inline;
+  background: #ffff;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .2);
+  background-color: rgb(30,173,30);
+}
+
+.red_dot {
+  position: absolute;
+  top: 50%;
+  margin-left: -5px;
+  margin-top: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 100%;
+  left:5px;
+  display: inline;
+  background: #ffff;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .2);
+  background-color: rgb(253,96,33);
+}
+
+.red_dot {
+  position: absolute;
+  top: 50%;
+  margin-left: -5px;
+  margin-top: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 100%;
+  left:5px;
+  display: inline;
+  background: #ffff;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .2);
+  background-color: rgb(253,96,33);
+}
+.blue_dot {
+  position: absolute;
+  top: 50%;
+  margin-left: -5px;
+  margin-top: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 100%;
+  left:5px;
+  display: inline;
+  background: #ffff;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .2);
+  background-color: rgb(52, 137, 255);
+}
+
+
 </style>
