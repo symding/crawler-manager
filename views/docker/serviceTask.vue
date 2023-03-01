@@ -8,17 +8,21 @@
                 <el-breadcrumb-item> {{service.name}} </el-breadcrumb-item>
                 <el-breadcrumb-item>task 列表</el-breadcrumb-item>
             </el-breadcrumb>
-            <h2>{{ service.name}} 的 task</h2>
+            <div>
+              <h2 style="display:inline-block">{{ service.name}} 的 task</h2>
+            </div>
     </div>
 
-    <div>
-        <div style="margin-bottom:10px;">
+    <div style="height: 40px;">
         <!-- <el-button type="primary" style="background-color: rgb(10,90,190);border:0px;" size="mini" @click="createTask()">新建</el-button>-->
-        <el-checkbox-group v-model="checkStatus" style="display:inline-block">
+        <el-input-number v-model="task_num"  label="描述文字" style="width:110px;" size="mini" :disabled="service.replicas=='Global'"></el-input-number>
+        <el-checkbox-group v-model="checkStatus" style="display:inline-block;margin-top:10px;margin-left:10px;" size="mini" >
           <el-checkbox v-for="i in status_set" :key="i" :label="i"></el-checkbox>
         </el-checkbox-group>
         <el-button size="mini" @click="getAllTask()" style="float:right;"><i class="el-icon-refresh-right" style="font-weight:bolder;"></i></el-button>
       </div>
+    <div>
+        
   <el-table
   :data="tableData.filter(data => checkStatus.indexOf(data.status)>-1)"
   ref="taskTable"
@@ -102,11 +106,15 @@ export default {
     checkStatus:["running"],
     blue_status: ["new","allocated", "pending" ,"assigned", "accepted", "preparing", "ready","starting","complete"],
     red_status: ["shutdown", "failed", "rejected" ,"remove" ,"orphaned"],
+    task_num:this.service.replicas
   }},
   mounted() {
     this.getAllTask()
     },
   methods:{
+    scaleService(){
+
+    },
     clickRow: function(row,expandRows){
       let el = expandRows.length
       this.task_log = ''
@@ -151,5 +159,7 @@ export default {
   }
   }
 </script>
+<style>
+</style>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
