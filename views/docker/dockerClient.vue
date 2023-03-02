@@ -20,7 +20,7 @@
             <el-button size="mini" @click="getCientInfo()" style="float:right;"><i class="el-icon-refresh-right" style="font-weight:bolder;"></i></el-button>
         </div>
         <el-table 
-            :data="docker_clients"
+            :data="dockerClients"
             height="590"
             :cell-style="{'padding-top':'6px','padding-bottom':'6px','font-size':'12px'}"
             :header-cell-style="{'font-size':'12px','padding-bottom':'6px','padding-top':'6px','background-color':'rgb(249,249,249)'}"
@@ -37,14 +37,14 @@
             </el-table-column>
             <el-table-column label="Node" width="200" sortable>
                 <template slot-scope="scope">
-                    <div  class="cell_click" @click="getClientNode(scope.row.name,scope.row.host)">
+                    <div  class="cell_click" @click="getClientNode(scope.row)">
                         <p style="color:rgb(65,125,205);">{{ scope.row.node_alive_count}}/{{ scope.row.node_total_count}}</p>
                     </div>
                 </template>
             </el-table-column>
             <el-table-column  label="Service" sortable>
                 <template slot-scope="scope">
-                    <div  class="cell_click" @click="getClientService(scope.row.name,scope.row.host)">
+                    <div  class="cell_click" @click="getClientService(scope.row)">
                     <a style="color:rgb(65,125,205);">{{ scope.row.service_count}}</a>
                     </div>
                 </template>
@@ -78,37 +78,15 @@
         </el-row> -->
         <el-drawer
             title="client"
-            :visible.sync="client_drawer"
+            :visible.sync="drawler"
             :with-header="false"
             :destroy-on-close="true"
             @closed="getCientInfo"
             size="80%">
-            <edit-client :client="selectClient"></edit-client>
+            <edit-client :client="activeClient" v-if="activeComponent=='client'"></edit-client>
+            <docker-service :client="activeClient" v-if="activeComponent=='service'"></docker-service>
+            <docker-node :client="activeClient" v-if="activeComponent=='node'"></docker-node>
         </el-drawer>
-        <el-drawer
-            title="service"
-            :visible.sync="service_drawler"
-            :with-header="false"
-            :destroy-on-close="true"
-            size="80%">
-            <docker-service :client="selectClient"></docker-service>
-        </el-drawer>
-        <el-drawer
-            title="node"
-            :visible.sync="node_drawler"
-            :with-header="false"
-            :destroy-on-close="true"
-            size="80%">
-            <docker-node :client="selectClient"></docker-node>
-        </el-drawer>
-        <!-- <el-drawer
-            title="inspect"
-            :visible.sync="inspect_drawler"
-            :with-header="false"
-            :destroy-on-close="true"
-            size="80%">
-            <json-view :value="inspect_data"></json-view>
-        </el-drawer> -->
     </div>
     
   </template>
@@ -126,49 +104,47 @@
         editClient,
     },
     data: function () {return {
-        docker_clients:[],
-        inspect_drawler:false,
-        service_drawler:false,
-        node_drawler:false,
-        container_drawler:false,
-        client_drawer:false,
+        dockerClients:[],
+        drawler:false,
         selectClient: {},
         searchText:"",
-        inspect_data: {}
+        activeClient:{},
+        activeComponent: ''
   }},
     mounted() {
         this.getCientInfo()
         }
     ,
     methods: {
-        clientInspect(client){
-            console.log(client)
-            this.inspect_data = client.inspect
-            this.inspect_drawler = true
+        // clientInspect(client){
+        //     console.log(client)
+        //     this.inspect_data = client.inspect
+        //     this.inspect_drawler = true
+        // },
+        getClientNode: function(client){
+            this.activeClient = client
+            this.activeComponent = "node"
+            this.drawler = true
         },
-        getClientNode: function(name,host){
-            this.selectClient['host'] = host
-            this.selectClient['name'] = name
-            this.node_drawler = true
-        },
-        getClientService: function(name,host){
-            this.selectClient['host'] = host
-            this.selectClient['name'] = name
-            this.service_drawler = true
+        getClientService: function(client){
+            this.activeClient = client
+            this.activeComponent = "service"
+            this.drawler = true
         },
         editClient: function(client,create){
-            this.selectClient = client
-            this.selectClient['create'] = create
-            this.client_drawer = true
+            this.activeClient = client
+            this.activeComponent = "client"
+            this.activeClient['create'] = create
+            this.drawler = true
             },
         createClient:function(){
             this.editClient({},true)
         },
         getCientInfo(){
             dockerClientInfo({}).then((response) => {
-                this.docker_clients = []
+                this.dockerClients = []
                 for(var item of response.data) {
-                this.docker_clients.push(item)
+                this.dockerClients.push(item)
             }})
         }
     },

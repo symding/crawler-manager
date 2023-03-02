@@ -65,10 +65,9 @@ pre {
   width: 8px;
   height: 8px;
   border-radius: 100%;
-  left:5px;
+  left:4px;
   display: inline;
   background: #ffff;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .2);
   background-color: rgb(30,173,30);
 }
 
@@ -80,10 +79,9 @@ pre {
   width: 8px;
   height: 8px;
   border-radius: 100%;
-  left:5px;
+  left:4px;
   display: inline;
   background: #ffff;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .2);
   background-color: rgb(253,96,33);
 }
 
@@ -95,10 +93,9 @@ pre {
   width: 8px;
   height: 8px;
   border-radius: 100%;
-  left:5px;
+  left:4px;
   display: inline;
   background: #ffff;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .2);
   background-color: rgb(253,96,33);
 }
 .blue_dot {
@@ -112,11 +109,24 @@ pre {
   left:5px;
   display: inline;
   background: #ffff;
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .2);
   background-color: rgb(52, 137, 255);
 }
 .cell_click:hover {
   background-color: rgb(210, 221, 235);
   border-radius: 4px;
+}
+.el-checkbox__input.is-checked .el-checkbox__inner,
+.el-checkbox__input.is-indeterminate .el-checkbox__inner {
+  border-color: rgb(65,125,205) !important;
+  background-color: rgb(65,125,205) !important;
+}
+.el-checkbox__input.is-checked+.el-checkbox__label{
+color: rgb(65,125,205) !important;
+}
+.el-checkbox__inner:hover{
+border-color: rgb(65,125,205) !important;
+}
+.el-checkbox__input.is-focus .el-checkbox__inner {
+border-color: rgb(65,125,205) !important;
 }
 </style>

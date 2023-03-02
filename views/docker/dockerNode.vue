@@ -24,13 +24,13 @@
         <el-input
                     v-model="searchText"
                     size="mini"
-                    style="width:30%;margin-left: 5px;"
+                    style="width:200px;margin-left: 5px;"
                     />
         <el-button size="mini" @click="getAllTask()" style="float:right;"><i class="el-icon-refresh-right" style="font-weight:bolder;"></i></el-button>
       </div>
   <el-table
   :data="tableData"
-  height="650"
+  height="calc(100vh - 170px)"
   :cell-style="{'padding-top':'6px','padding-bottom':'6px','font-size':'12px',}"
   :header-cell-style="{'font-size':'12px','padding-bottom':'6px','padding-top':'6px','background-color':'rgb(249,249,249)'}"
   style="width: 100%;">
@@ -92,7 +92,8 @@ export default {
     client: Object
   },
   data: function () {return {
-    tableData:[]
+    tableData:[],
+    searchText:''
   }},
   mounted() {
     clientNodes({"host":this.client.host}).then(response => {for(var item of response.data) {
