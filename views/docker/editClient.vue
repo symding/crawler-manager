@@ -34,8 +34,11 @@
                 <el-input v-model="new_client.api_access"></el-input>
             </el-form-item>
             </el-form>
-            <el-button type="primary" style="background-color: rgb(10,90,190);border:0px;" size="mini" @click="submitData()">提交</el-button>
-            <el-button size="mini" @click="pressEsc()">取消</el-button>
+            <el-button type="primary" style="background-color: rgb(10,90,190);border:0px;width:60px;" size="mini" @click="submitData()">
+                <i class="el-icon-loading" style="text-align:center;" v-if="progress"></i>
+                <span v-if="!progress" style="text-align:center;">提交</span>
+            </el-button>
+            <el-button size="mini" @click="pressEsc()" :disabled="progress">取消</el-button>
     </div>
   </template>
   <script>
@@ -56,23 +59,42 @@
                 group_id: this.client.group_id,
                 api_key: this.client.api_key,
                 api_access: this.client.api_access,
+                
         },
+            progress: false
         }
     },
     methods:{
         submitData(){
+            var that = this
             let param = this.new_client
             console.log(param)
+            this.progress = true
             editClient(param).then(
-                function (resp) { if (resp.data.Status == 'success') { this.$message('更新成功') } }).catch(
-                    function (error) { console.log(error) })
-            this.pressEsc()
+                function (resp) { 
+                    if (resp.data.Status == "success") { 
+                        that.progress = false
+                        that.$notify({
+                            title: "修改成功!",
+                            message: "集群 " + param.name + " 修改成功",
+                            type: "success",
+                            });
+                        that.$emit("childEvent")
+                    }else{
+                        that.progress = false
+                        that.$notify({
+                            title: "修改失败!",
+                            message: "集群 " + param.name + " 修改失败",
+                            type: "error",
+                            });
+                    }}).catch(
+                        function (error) {
+                        console.log(error) }
+            )
+            
+            
         },
-        pressEsc(){
-            document.body.dispatchEvent(new KeyboardEvent('keydown', {
-                bubbles: true, cancelable: true, keyCode: 27
-            }));
-        }
+        
     }
   }
   </script>

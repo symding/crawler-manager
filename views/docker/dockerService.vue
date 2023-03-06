@@ -18,39 +18,41 @@
                     size="mini"
                     style="width:200px;margin-left: 5px;"
                     />
-        <el-button size="mini" @click="getAllTask()" style="float:right;"><i class="el-icon-refresh-right" style="font-weight:bolder;"></i></el-button>
+        <el-button size="mini" @click="getService()" style="float:right;"><i class="el-icon-refresh-right" style="font-weight:bolder;"></i></el-button>
       </div>
         <el-table
-        :data="tableData.filter(data => data.name.toLowerCase().includes(searchText.toLowerCase()))"
+        :data="tableData"
         height="calc(100vh - 200px)"
-        :row-key="row => { return row.id}"
+        :row-key="(row) => { return row.ID}"
         :cell-style="{'padding-top':'6px','padding-bottom':'6px','font-size':'12px'}"
         :header-cell-style="{'font-size':'12px','padding-bottom':'6px','padding-top':'6px','background-color':'rgb(249,249,249)'}"
         style="width: 100%;"
+        @selection-change="handleSelectionChange"
             >
         <el-table-column
           type="selection"
+          :reserve-selection="true"
           width="45">
         </el-table-column>
         <el-table-column
           label="Name"
+          prop="Name"
           sortable
-          prop="name"
           width="400">
           <template slot-scope="scope">
             <div  class="cell_click" @click="editService(scope.row)">
-              <p style="color:rgb(65,125,205);margin:0px;">{{ scope.row.name}}</p>
+              <p style="color:rgb(65,125,205);margin:0px;">{{ scope.row.Name}}</p>
             </div>
-            
             </template>
         </el-table-column>
         <el-table-column
           label="Rep"
-          prop="replicas"
+          prop="Task"
           sortable>
           <template slot-scope="scope">
             <div  class="cell_click" @click="showServiceTasks(scope.row)">
-              <p style="color:rgb(65,125,205);margin:0px;">{{ scope.row.replicas}}</p>
+              <p style="color:rgb(65,125,205);margin:0px;" v-if="scope.row.Task!=-1">{{ scope.row.Task}}</p>
+              <p style="color:rgb(65,125,205);margin:0px;" v-if="scope.row.Task==-1">Global</p>
             </div>
           </template>
         </el-table-column>
@@ -65,7 +67,7 @@
         </el-table-column>
         <el-table-column
           label="image"
-          prop="image"
+          prop="Image"
           width="210"
           sortable>
         </el-table-column>
@@ -73,7 +75,7 @@
           label="约束条件"
           width="180">
           <template slot-scope="scope">
-            <el-tag v-for="t in scope.row.constraints" type="info" size="mini" style="margin-right:5px;" :key="t">{{ t }}</el-tag>
+            <el-tag v-for="t in scope.row.Constraints" type="info" size="mini" style="margin-right:5px;" :key="t">{{ t }}</el-tag>
             </template>
         </el-table-column>
         <el-table-column
@@ -81,7 +83,7 @@
           width="260"
           >
           <template slot-scope="scope">
-            <el-tag v-for="t in scope.row.mounted" size="mini"  type="info" style="margin-right:5px;" :key="t">{{ t }}</el-tag>
+            <el-tag v-for="t in scope.row.Mounted" size="mini"  type="info" style="margin-right:5px;" :key="t">{{ t }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -97,9 +99,18 @@
       </el-table>
     </div>
     <div style="margin-top:10px;">
-        <el-button size="mini" @click="getAllTask()" >暂停</el-button>
-        <el-button size="mini" @click="getAllTask()" >删除</el-button>
-        <el-button size="mini" @click="getAllTask()" >启动</el-button>
+      <el-tooltip style="font-size: 5px;" effect="light" content="暂停选中的Service,已暂停的不受影响." placement="top">
+        <el-button size="mini" style="margin-right: 5px;margin-left:0px;" @click="getAllTask()" :disabled="selectedService.length==0">暂停</el-button>
+      </el-tooltip>
+      <el-tooltip style="font-size: 5px;" effect="light" content="启动选中的Service,已启动的不受影响." placement="top">
+        <el-button size="mini" style="margin-right: 5px;margin-left:0px;" @click="getAllTask()" :disabled="selectedService.length==0">启动</el-button>
+      </el-tooltip>
+      <el-tooltip style="font-size: 5px;" effect="light" content="删除选中的Service." placement="top">
+        <el-button size="mini" style="margin-right: 5px;margin-left:0px;" @click="getAllTask()" :disabled="selectedService.length==0">删除</el-button>
+      </el-tooltip>
+      <el-tooltip style="font-size: 5px;" effect="light" content="同步Service配置至数据库以持久化." placement="top">
+        <el-button size="mini"  style="margin-right: 5px;margin-left:0px;" @click="syncService()" :disabled="selectedService.length==0">同步</el-button>
+      </el-tooltip>
       </div>
     
     <el-drawer
@@ -117,7 +128,8 @@
 </template>
 
 <script>
-import { clientServices } from '../../api/dockerApi';
+import { clientServices,saveService } from '../../api/dockerApi';
+import ServiceClass from '../../api/data/dockerServiceClass'
 import ServiceTask from './serviceTask.vue';
 import EditService from './editService.vue';
 export default {
@@ -130,18 +142,20 @@ export default {
     client: Object
   },
   data: function () {return {
-    tableData:[],
+    tableData: [],
     drawer: false,
     activeService:{
     },
     searchText:"",
-    activeComponent:""
+    activeComponent:"",
+    selectedService:[]
   }},
-  mounted() {
-    clientServices({"host":this.client.host}).then(response => {for(var item of response.data) {
-          this.tableData.push(item)
-  }})
-    },
+  mounted(){
+    for(var item of this.client.Service){
+      let s = new ServiceClass(item)
+      this.tableData.push(s.table_data())
+    }
+  },
   methods: {
     showServiceTasks:function(service) {
       this.activeService = service
@@ -158,6 +172,34 @@ export default {
     },
     createService:function(){
       this.editService({},true)
+    },
+    handleSelectionChange(val){
+      console.log(val)
+      this.selectedService = val
+
+    },
+    syncService(){
+      var serviceid = Array()
+      this.selectedService.forEach( s=> {
+        serviceid.push(s.id)
+      });
+      var param = {
+        "host":this.client.host,
+        "client_name":this.client.name,
+        "services":JSON.stringify(serviceid)
+
+      }
+      saveService(param).then(
+        function (resp) {
+          console.log(resp)
+        }).catch(function (error) {
+                        console.log(error) })
+    },
+    getService() {
+        this.tableData = []
+        clientServices({"host":this.client.Host}).then(response => {for(var item of response.data) {
+          this.tableData.push(item)
+      }})
     }
   }
   }

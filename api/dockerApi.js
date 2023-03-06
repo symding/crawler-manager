@@ -55,3 +55,16 @@ export const editClient = (param) => {
         // }]
     })
 }
+
+export const saveService = (param) => {
+    return axios.request({
+        url: 'api/docker/saveService',
+        method: 'post',
+        data: param,
+        // transformRequest: [function (data, headers) {
+        //     // 去除post请求默认的Content-Type
+        //     headers.post['Content-Type'] = "form-data"
+        //     return data
+        // }]
+    })
+}

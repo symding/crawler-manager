@@ -29,29 +29,35 @@
             <el-table-column prop="Name" label="集群名称" width="200" sortable>
                 <template slot-scope="scope">
                     <div  class="cell_click" @click="editClient(scope.row,false)">
-                        <p style="font-size:14px;color:rgb(65,125,205);margin:0px;">{{ scope.row.name}}</p>
-                        <p style="font-size:8px;margin:0px;margin:0px;">{{ scope.row.host}}</p>
+                        <p style="font-size:14px;color:rgb(65,125,205);margin:0px;">{{ scope.row.Name}}</p>
+                        <p style="font-size:8px;margin:0px;margin:0px;">{{ scope.row.Host}}</p>
                     </div>
                 </template>
-
+            </el-table-column>
+            <el-table-column prop="Status" label="集群状态" width="100" sortable>
+                <template slot-scope="scope">
+                    <div class="green_dot"  v-if="scope.row.Status=='Active'"></div>
+                    <div class="red_dot"  v-if="scope.row.Status=='Disconnected'"></div>
+                        {{ scope.row.Status}}
+                </template>
             </el-table-column>
             <el-table-column label="Node" width="200" sortable>
                 <template slot-scope="scope">
                     <div  class="cell_click" @click="getClientNode(scope.row)">
-                        <p style="color:rgb(65,125,205);">{{ scope.row.node_alive_count}}/{{ scope.row.node_total_count}}</p>
+                        <p style="color:rgb(65,125,205);">{{ scope.row.Node.filter(node => node.Spec.Availability=="active").length}}/{{ scope.row.NodeNumber}}</p>
                     </div>
                 </template>
             </el-table-column>
             <el-table-column  label="Service" sortable>
                 <template slot-scope="scope">
                     <div  class="cell_click" @click="getClientService(scope.row)">
-                    <a style="color:rgb(65,125,205);">{{ scope.row.service_count}}</a>
+                    <a style="color:rgb(65,125,205);">{{ scope.row.Service.length}}</a>
                     </div>
                 </template>
             </el-table-column>
             <el-table-column  label="Container" sortable>
                 <template slot-scope="scope">
-                    <p style="color:rgb(65,125,205);">{{ scope.row.container_count}}</p>
+                    <p style="color:rgb(65,125,205);">{{ scope.row.Container.length}}</p>
                 </template>
             </el-table-column>
             <el-table-column prop="ErrorLog" label="操作" width="160">
@@ -83,7 +89,7 @@
             :destroy-on-close="true"
             @closed="getCientInfo"
             size="80%">
-            <edit-client :client="activeClient" v-if="activeComponent=='client'"></edit-client>
+            <edit-client :client="activeClient" v-if="activeComponent=='client'" @childEvent="closeDrawer"></edit-client>
             <docker-service :client="activeClient" v-if="activeComponent=='service'"></docker-service>
             <docker-node :client="activeClient" v-if="activeComponent=='node'"></docker-node>
         </el-drawer>
@@ -116,11 +122,9 @@
         }
     ,
     methods: {
-        // clientInspect(client){
-        //     console.log(client)
-        //     this.inspect_data = client.inspect
-        //     this.inspect_drawler = true
-        // },
+        closeDrawer(){
+            this.drawler = false
+        },
         getClientNode: function(client){
             this.activeClient = client
             this.activeComponent = "node"
@@ -144,7 +148,7 @@
             dockerClientInfo({}).then((response) => {
                 this.dockerClients = []
                 for(var item of response.data) {
-                this.dockerClients.push(item)
+                    this.dockerClients.push(item)
             }})
         }
     },
