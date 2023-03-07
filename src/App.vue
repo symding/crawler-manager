@@ -57,6 +57,11 @@ pre {
   font-family: Menlo, Monaco, "Courier New", monospace;
 }
 
+[class^="jv-"] {
+  font-family: Menlo, Monaco, "Courier New", monospace;
+  font-size:12px;
+}
+
 .green_dot {
   position: absolute;
   top: 50%;

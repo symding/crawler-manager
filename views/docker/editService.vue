@@ -4,12 +4,12 @@
                 <el-breadcrumb separator-class="el-icon-arrow-right">
                 <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
                 <el-breadcrumb-item>集群管理</el-breadcrumb-item>
-                <el-breadcrumb-item v-if="!service.create">{{service.name}}</el-breadcrumb-item>
+                <el-breadcrumb-item v-if="!service.create">{{new_service.name}}</el-breadcrumb-item>
                 <el-breadcrumb-item v-if="!service.create">修改</el-breadcrumb-item>
                 <el-breadcrumb-item v-if="service.create">新建 Service</el-breadcrumb-item>
             </el-breadcrumb>
             <h2 v-if="service.create">新建Service</h2>
-            <h2 v-if="!service.create"> 修改 {{service.name}}</h2>
+            <h2 v-if="!service.create"> 修改 {{new_service.name}}</h2>
         </div>
         <el-form ref="form" :model="new_service" label-width="120px" size="mini" style="margin:15px;">
             <el-form-item label="ServiceName" >
@@ -70,29 +70,31 @@
                 <el-button>取消</el-button>
             </el-form-item>
             </el-form>
+            
     </div>
   </template>
   
   <script>
+  import ServiceClass from '../../api/data/dockerServiceClass'
   export default {
-    name: 'HelloWorld',
+    name: 'EditService',
     props: {
       service: Object,
-      client:Object
+      client: Object
     },
     data() {
+        let si = new ServiceClass(this.service)
         return {
             inputValue:'',
             inputVisible:false,
             new_service: {
-                name: '',
-                image: '',
-                global_mode: true,
-                replicas:0,
+                name: si.name(),
+                image: si.image(),
+                replicas:si.task(),
                 command: '',
                 entrypoint: '',
-                volumns: [],
-                constraints: []
+                volumns: si.mounted(),
+                constraints: si.constraints()
         },
         }
     },
@@ -116,6 +118,9 @@
             }
             this.inputVisible = false;
             this.inputValue = '';
+        },
+        onSubmit(){
+
         }
     }
   }
@@ -144,6 +149,10 @@
   }
   a {
     color: #42b983;
+  }
+
+  .jv-key {
+    font-family: Menlo, Monaco, "Courier New", monospace;
   }
   
   </style>

@@ -4,10 +4,10 @@
                 <el-breadcrumb separator-class="el-icon-arrow-right">
                 <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
                 <el-breadcrumb-item>集群列表</el-breadcrumb-item>
-                <el-breadcrumb-item > {{ client.name}} </el-breadcrumb-item>
+                <el-breadcrumb-item > {{ client.Name}} </el-breadcrumb-item>
                 <el-breadcrumb-item> Service列表 </el-breadcrumb-item>
             </el-breadcrumb>
-            <h2>集群 {{ client.name}} 的 Service</h2>
+            <h2>集群 {{ client.Name}} 的 Service</h2>
     </div>
 
     <div>
@@ -40,7 +40,7 @@
           sortable
           width="400">
           <template slot-scope="scope">
-            <div  class="cell_click" @click="editService(scope.row)">
+            <div  class="cell_click" @click="inspectService(scope.row.ID)">
               <p style="color:rgb(65,125,205);margin:0px;">{{ scope.row.Name}}</p>
             </div>
             </template>
@@ -50,7 +50,7 @@
           prop="Task"
           sortable>
           <template slot-scope="scope">
-            <div  class="cell_click" @click="showServiceTasks(scope.row)">
+            <div  class="cell_click" @click="showServiceTasks(scope.row.ID)">
               <p style="color:rgb(65,125,205);margin:0px;" v-if="scope.row.Task!=-1">{{ scope.row.Task}}</p>
               <p style="color:rgb(65,125,205);margin:0px;" v-if="scope.row.Task==-1">Global</p>
             </div>
@@ -83,17 +83,17 @@
           width="260"
           >
           <template slot-scope="scope">
-            <el-tag v-for="t in scope.row.Mounted" size="mini"  type="info" style="margin-right:5px;" :key="t">{{ t }}</el-tag>
+            <el-tag v-for="t in scope.row.Mounted" size="mini"  type="info" style="margin-right:5px;" :key="t.Type">{{ t }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column
           fixed="right"
           label="操作"
           width="120">
-          <template>
+          <template slot-scope="scope">
             <el-button style="color:rgb(65,125,205);padding:0px;" type="text" size="small">启动</el-button>
             <el-button style="color:rgb(65,125,205);padding:0px;" type="text" size="small">暂停</el-button>
-            <el-button style="color:rgb(65,125,205);padding:0px;" type="text" size="small">编辑</el-button>
+            <el-button style="color:rgb(65,125,205);padding:0px;" type="text" size="small" @click="editService(scope.row.ID)">编辑</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -123,6 +123,9 @@
         >
         <service-task :service="activeService" :client="client" v-if="activeComponent=='task'"></service-task>
         <edit-service :service="activeService" :client="client" v-if="activeComponent=='edit'"></edit-service>
+        <div v-if="activeComponent=='inspect'">
+          <json-viewer :value="activeService" :expand-depth=3></json-viewer>
+        </div>
       </el-drawer>
     </div>
 </template>
@@ -133,7 +136,7 @@ import ServiceClass from '../../api/data/dockerServiceClass'
 import ServiceTask from './serviceTask.vue';
 import EditService from './editService.vue';
 export default {
-  name: 'HelloWorld',
+  name: 'DockerService',
   components: {
     ServiceTask,
     EditService
@@ -144,8 +147,7 @@ export default {
   data: function () {return {
     tableData: [],
     drawer: false,
-    activeService:{
-    },
+    activeService:{},
     searchText:"",
     activeComponent:"",
     selectedService:[]
@@ -157,21 +159,42 @@ export default {
     }
   },
   methods: {
-    showServiceTasks:function(service) {
-      this.activeService = service
+    inspectService(serviceId){
+      for (var item of this.client.Service){
+        if (item.ID == serviceId){
+          this.activeService = item
+        }
+      }
+      this.activeComponent = "inspect"
+      this.drawer = true
+    },
+    showServiceTasks:function(serviceId) {
+      for (var item of this.client.Service){
+        if (item.ID == serviceId){
+          this.activeService = item
+        }
+      }
       this.activeComponent = "task"
       this.drawer = true
     },
-    editService: function(service,create){
+    editService: function(serviceId,create){
       this.activeComponent = "edit"
       if (!create){
-        this.activeService = service
+        for (var item of this.client.Service){
+          if (item.ID == serviceId){
+            this.activeService = item
+            console.log(item)
+          }
+        }
+      }else{
+        this.activeService = {
+          create: true
+        }
       }
-      this.activeService['create'] = create
       this.drawer = true
     },
     createService:function(){
-      this.editService({},true)
+      this.editService('',true)
     },
     handleSelectionChange(val){
       console.log(val)

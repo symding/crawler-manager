@@ -11,9 +11,11 @@ import router from '../routers'
 import http from 'axios'
 import echarts from '../config/echarts'
 import '@/assets/font/font.css'
+import JsonViewer from 'vue-json-viewer'
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
+Vue.use(JsonViewer)
 Vue.prototype.$http = http
 Vue.prototype.$charts = echarts
 
