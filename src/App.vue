@@ -37,7 +37,7 @@ body {
 .el-aside {
   color: #333;
   height: calc(100vh - 60px);
-  border:1px;
+  border-right:1px solid rgb(210, 210, 210);
 }
 
 .el-main {

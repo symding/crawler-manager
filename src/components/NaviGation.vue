@@ -2,7 +2,9 @@
     <div style="border:1px;height:100%;width:100%;">
     <el-menu
         default-active="2"
-        :router="true">
+        :router="true"
+        style="border:0px;"
+        >
         <el-menu-item v-for="item in noChildren" :index="item.path" :key="item.path">
                 <i :class="item.icon"></i>
                 <span slot="title">{{ item.name }}</span>
